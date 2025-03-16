@@ -398,9 +398,9 @@ NIL
 
 BUTTON
 199
-14
+15
 271
-47
+48
 Erase links
 ask links [die]
 NIL
@@ -475,9 +475,9 @@ HORIZONTAL
 
 SWITCH
 271
-14
+15
 361
-47
+48
 Wo-links
 Wo-links
 1
@@ -501,9 +501,9 @@ HORIZONTAL
 
 SWITCH
 361
-14
+15
 485
-47
+48
 permanent-links
 permanent-links
 1
