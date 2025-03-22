@@ -7,10 +7,13 @@ breed [randomizeds randomized]
 breed [tit-for-tats tit-for-tat]
 breed [inverse-tats inverse-tat]
 breed [resentfulls resentfull]
+breed [vengefuls vengeful]
 resentfulls-own [last-interaction]
+vengefuls-own [last-interaction]
+
 
 to-report get-random-breed
-  let total ( prop-goods + prop-bads + prop-rands + prop-tats + prop-inv-tats + prop-resentfulls)
+  let total ( prop-goods + prop-bads + prop-rands + prop-tats + prop-inv-tats + prop-resentfulls + prop-vengefuls)
   show ( total )
   let number (random total + 1)
   let suma prop-goods
@@ -35,22 +38,28 @@ to-report get-random-breed
 
           ][
             set suma (suma + prop-resentfulls)
-            if ( suma >= number )[
+            ifelse ( suma >= number )[
               report ("resentfulls")
+            ][
+              set suma (suma + prop-vengefuls)
+              if (suma >= number) [
+                report "vengefuls"
             ]
           ]
         ]
       ]
     ]
   ]
-
-
+ ]
 end
 
 to-report move-strategy [mover receptor]
   if ([breed] of mover = goods)[report "good"]
+
   if ([breed] of mover = bads) [report "bad"]
+
   if ([breed] of mover = randomizeds) [report one-of ["good" "bad"]]
+
   if ([breed] of mover = tit-for-tats)[
     if-else (member? ([who] of receptor) ([foes] of mover) )[
       report "bad"
@@ -58,6 +67,7 @@ to-report move-strategy [mover receptor]
       report "good"
     ]
   ]
+
   if ([breed] of mover = inverse-tats)[
     if-else (member? ([who] of receptor) ([foes] of mover) )[
       report "good"
@@ -65,16 +75,40 @@ to-report move-strategy [mover receptor]
       report "bad"
     ]
   ]
+
   if ([breed] of mover = resentfulls) [
     ifelse ( [last-interaction] of mover  = "good")[
-      report "bad"
+      report "good"
     ][
       if ([last-interaction] of mover = "bad")[
-        report "good"
+        report "bad"
       ]
     ]
   ]
+
+  if ([breed] of mover = vengefuls) [
+    if ([last-interaction] of mover = "bad") [
+      report "bad"
+    ]
+    report "good"
+  ]
 end
+
+to create-venges [num-vengefuls]
+  create-vengefuls num-vengefuls [
+    setxy random-xcor random-ycor
+    set shape "person"
+    set color gray
+    set health 30
+    set friends []
+    set foes []
+    set next-friends []
+    set next-foes []
+    set last-interaction "good"
+  ]
+end
+
+
 to create-resent [num-resents]
   create-resentfulls num-resents [
     setxy random-xcor random-ycor
@@ -154,7 +188,7 @@ to create-rands [num-rands]
   ]
 end
 
-to setup [num-goods num-bads num-rands num-tats num-invtats num-resents]
+to setup [num-goods num-bads num-rands num-tats num-invtats num-resents num-vengefuls]
 
   clear-all
   create-resent num-resents
@@ -163,6 +197,7 @@ to setup [num-goods num-bads num-rands num-tats num-invtats num-resents]
   create-goodts num-goods
   create-badts num-bads
   create-rands num-rands
+  create-venges num-vengefuls
 
   set num-good-relations 0
   set radius 5
@@ -176,10 +211,6 @@ to-report average-health
 end
 
 to go [n_iter]
-
-
-
-
   if (permanent-links = False) [
     ask links [
       die
@@ -187,13 +218,9 @@ to go [n_iter]
   ]
 
   tick
-  ask turtles [facexy random-xcor random-ycor]
 
-  ask turtles [
-
-    fd 10
-
-  ]
+  ask turtles [ facexy random-xcor random-ycor ]
+  ask turtles [ fd 10 ]
 
   ask turtles[
 
@@ -207,60 +234,59 @@ to go [n_iter]
       let hismove move-strategy self me
 
       if ( hismove = "bad" )[
-
-
-
         ask me[
           if (breed = resentfulls)[set last-interaction "bad"]
+
+          if (breed = vengefuls)[set last-interaction "bad"]
+
           if (member? numero friends)[
             set next-friends remove numero next-friends
             set next-foes lput numero next-foes
           ]
-          if ( not member? numero foes) [
-            set next-foes lput numero next-foes
 
+          if (not member? numero foes) [
+            set next-foes lput numero next-foes
           ]
 
           if-else (mymove = "good")[
             set health (health - 4 )
             if (Wo-links = False) [create-link-with him [set color [255 140 0]]]
-        ] [
+          ][
             set health (health - 1 )
             if (Wo-links = False) [create-link-with him [set color red]]
           ]
         ]
+      ]
 
-
-    ]
       if ( hismove = "good" )[
-
         ask me[
           if (breed = resentfulls)[set last-interaction "good"]
+
           if (member? numero foes)[
             set next-foes remove numero next-foes
             set next-friends lput numero next-friends
           ]
-          if ( not member? numero foes) [
+
+          if ( not member? numero friends) [
             set next-friends lput numero next-friends
           ]
 
           if-else (mymove = "bad")[
             set health ( health + 5 )
             if (Wo-links = False) [create-link-with him [set color  [255 140 0]]]
-          ] [
+          ][
             set health ( health + 3 )
             set num-good-relations ( num-good-relations + 1 )
             if (Wo-links = False) [create-link-with him [set color green]]
-
           ]
         ]
-
       ]
-
     ]
+
     let hambre ( 1 + ( log (count(turtles)) 10 ) )
     set health (health - hambre)
   ]
+
   ask turtles[
     if (health <= 0)[
       ;set radius (radius + 0.25)
@@ -268,7 +294,6 @@ to go [n_iter]
     ]
     set friends next-friends
     set foes next-foes
-
   ]
 
 
@@ -280,6 +305,8 @@ to go [n_iter]
       show(word "Num_goods: " count(goods))
       show(word "Num_rands: " count(randomizeds))
       show(word "Num_tats: " count(tit-for-tats))
+      show(word "Num_resentfulls: " count(resentfulls))
+      show(word "Num_vengefuls : " count(vengefuls))
     ]
     let nacidos round( num-good-relations / (2 * n_iter))
     show (word "Born: " nacidos)
@@ -287,12 +314,13 @@ to go [n_iter]
     repeat nacidos [
       let random-breed  get-random-breed
 
-      if (random-breed = "goods") [create-goodts 1        ]
+      if (random-breed = "goods") [create-goodts 1]
       if (random-breed = "bads") [create-badts 1]
       if (random-breed = "randomizeds") [create-rands 1]
       if (random-breed = "tit-for-tats") [create-tats 1]
       if (random-breed = "inverse-tats" ) [create-invtats 1]
-
+      if (random-breed = "vengefuls") [create-venges 1]
+      if (random-breed = "resentfulls" ) [create-resent 1]
 
     ]
 
@@ -307,14 +335,6 @@ to go [n_iter]
   if (count(goods) <= 1 and good-extinct = -1)[
     set good-extinct ticks
   ]
-
-
-
-
-
-
-
-
 
 end
 @#$#@#$#@
@@ -351,7 +371,7 @@ BUTTON
 89
 48
 SETUP
-setup goods-spawn bads-spawn rands-spawn tats-spawn inverse-tats-spawn resentfulls-spawn
+setup goods-spawn bads-spawn rands-spawn tats-spawn inverse-tats-spawn resentfulls-spawn vengefuls-spawn
 NIL
 1
 T
@@ -398,9 +418,9 @@ NIL
 
 BUTTON
 199
-15
+14
 271
-48
+47
 Erase links
 ask links [die]
 NIL
@@ -422,7 +442,7 @@ goods-spawn
 goods-spawn
 0
 50
-28.0
+23.0
 1
 1
 NIL
@@ -437,7 +457,7 @@ bads-spawn
 bads-spawn
 0
 50
-0.0
+7.0
 1
 1
 NIL
@@ -467,7 +487,7 @@ tats-spawn
 tats-spawn
 0
 50
-0.0
+13.0
 1
 1
 NIL
@@ -475,9 +495,9 @@ HORIZONTAL
 
 SWITCH
 271
-15
+14
 361
-48
+47
 Wo-links
 Wo-links
 1
@@ -493,7 +513,7 @@ inverse-tats-spawn
 inverse-tats-spawn
 0
 50
-0.0
+16.0
 1
 1
 NIL
@@ -501,9 +521,9 @@ HORIZONTAL
 
 SWITCH
 361
-15
+14
 485
-48
+47
 permanent-links
 permanent-links
 1
@@ -532,6 +552,7 @@ PENS
 "Inverse-tat" 1.0 0 -13345367 true "" "plot count(inverse-tats) / count(turtles)"
 "Bads" 1.0 0 -2674135 true "" "plot count(bads) / count(turtles)"
 "Resentfulls" 1.0 0 -8630108 true "" "plot count (resentfulls) / count(turtles)"
+"Vengefuls" 1.0 0 -7500403 true "" "plot count (vengefuls) / count(turtles)"
 
 PLOT
 1151
@@ -572,6 +593,7 @@ PENS
 "Inverse-tats" 1.0 0 -13345367 true "" "plot count inverse-tats"
 "Tit-for-tat" 1.0 0 -2064490 true "" "plot count tit-for-tats"
 "Randoms" 1.0 0 -1184463 true "" "plot count randomizeds"
+"Vengefuls" 1.0 0 -7500403 true "" "plot count vengefuls"
 
 SLIDER
 0
@@ -582,7 +604,7 @@ prop-goods
 prop-goods
 0
 100
-82.0
+96.0
 1
 1
 NIL
@@ -677,7 +699,7 @@ resentfulls-spawn
 resentfulls-spawn
 0
 50
-11.0
+12.0
 1
 1
 NIL
@@ -686,13 +708,43 @@ HORIZONTAL
 SLIDER
 0
 517
-164
+162
 550
 prop-resentfulls
 prop-resentfulls
 0
 100
-38.0
+0.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+0
+550
+161
+583
+prop-vengefuls
+prop-vengefuls
+0
+100
+0.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+1
+276
+173
+309
+vengefuls-spawn
+vengefuls-spawn
+0
+50
+14.0
 1
 1
 NIL
