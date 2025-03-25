@@ -311,6 +311,10 @@ to go [n_iter]
     let nacidos round( num-good-relations / (2 * n_iter))
     show (word "Born: " nacidos)
 
+    if (count turtles + nacidos > 800) [
+      set nacidos (800 - count turtles)  ;; Adjust nacidos to fit within limit
+    ]
+
     repeat nacidos [
       let random-breed  get-random-breed
 
@@ -442,7 +446,7 @@ goods-spawn
 goods-spawn
 0
 50
-23.0
+50.0
 1
 1
 NIL
@@ -457,7 +461,7 @@ bads-spawn
 bads-spawn
 0
 50
-7.0
+5.0
 1
 1
 NIL
@@ -472,7 +476,7 @@ rands-spawn
 rands-spawn
 0
 50
-0.0
+5.0
 1
 1
 NIL
@@ -513,7 +517,7 @@ inverse-tats-spawn
 inverse-tats-spawn
 0
 50
-16.0
+5.0
 1
 1
 NIL
@@ -594,6 +598,7 @@ PENS
 "Tit-for-tat" 1.0 0 -2064490 true "" "plot count tit-for-tats"
 "Randoms" 1.0 0 -1184463 true "" "plot count randomizeds"
 "Vengefuls" 1.0 0 -7500403 true "" "plot count vengefuls"
+"Resentfulls" 1.0 0 -8630108 true "" "plot count resentfulls"
 
 SLIDER
 0
@@ -604,7 +609,7 @@ prop-goods
 prop-goods
 0
 100
-96.0
+50.0
 1
 1
 NIL
@@ -619,7 +624,7 @@ prop-bads
 prop-bads
 0
 100
-0.0
+10.0
 1
 1
 NIL
@@ -634,7 +639,7 @@ prop-rands
 prop-rands
 0
 100
-0.0
+1.0
 1
 1
 NIL
@@ -649,7 +654,7 @@ prop-tats
 prop-tats
 0
 100
-0.0
+10.0
 1
 1
 NIL
@@ -664,7 +669,7 @@ prop-inv-tats
 prop-inv-tats
 0
 100
-0.0
+2.0
 1
 1
 NIL
@@ -699,7 +704,7 @@ resentfulls-spawn
 resentfulls-spawn
 0
 50
-12.0
+16.0
 1
 1
 NIL
@@ -714,7 +719,7 @@ prop-resentfulls
 prop-resentfulls
 0
 100
-0.0
+4.0
 1
 1
 NIL
@@ -729,7 +734,7 @@ prop-vengefuls
 prop-vengefuls
 0
 100
-0.0
+3.0
 1
 1
 NIL
@@ -744,7 +749,7 @@ vengefuls-spawn
 vengefuls-spawn
 0
 50
-14.0
+9.0
 1
 1
 NIL
@@ -753,24 +758,51 @@ HORIZONTAL
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+Este código pretende simular una sociedad, donde la gente entra en conflicto y la resolución de cada conflicto funciona como un juego (del estilo de la teoría de juegos)
 
 ## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+En cada tick los agentes se mueven a posiciones aleatorias y entran en conflicto con los demás agentes en un rango determinado. Estos combaten con todos los cercanos. Los puntos ganados o perdidos (siguiendo un esquema de teoría de juegos) se añaden como vida. Además existe un factor de hambre. Los mueren si su vida es menor o igual a 0 y además nacerán otros agentes en función de la cantidad de buenas relaciones existentes.
+
+el esquema es el siguiente:
+
+
+
++-- ----+---- ---+
+|  +3/+3 | -4/+5 |
++----- -+----- --+
+|  +5/-4 | -1 /-1 |
++--- ---+-- -----+
+
+Por ejemplo si el turtle 1 es generoso y el turtle 2 es egoísta, el turtle 1 perderá 4 puntos y el turtle 2 ganará 5 puntos.
+
+El hambre se calcula por cada tick como hambre = 1 + log(N) donde N es la población total
+
+Los nacimientos son controlados por una variable n_iter que controla cada cuantas iteraciones nacen personas. La cantidad de personas que nacen es M/n_iter, donde M es la cantidad de todas las relaciones buenas (verdes) que han ocurrido es las últimas n_iter iteraciones
+
+Existen diferentes agentes, cada agente tiene una estrategia de como lidiar con cada conflicto que encuentra:
+Good: siempre es generoso (verde)
+Bad: siempre egoísta (rojo)
+Randomized: elige aleatoriamente en cada conflicto (amarillo)
+Tit-for-tat: inicia siendo bueno, después repite el mismo movimiento que uso el otro turtle contra el que tiene conflicto la última vez que jugó contra él (rosa)
+Inverse-tat: utiliza la lógica inversa a tit-for-tat (azul)
+Resentful: empieza siendo bueno, después repite la misma estrategia usada contra él en su último conflicto (Nótese que no es como tit-fot-tat, pues este repite lo último que fues usado contra él mientras que tit-fot-tat repite lo último usado contra él por ese mismo turtle contra el que está en conflicto, es decir, tit-for-tat recuerda a los demás agentes) (violeta)
+Vengeful: inicia bueno, se convierte en malo tras haberse encontrado con algún egoísta (gris)
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+Para ejecutar una simulación, decida cuales agentes quiere que aparezcan inicialmente y cuantos de cada uno de ellos y también la proporción en la que nacerá cada uno de estos. Nótese que son proporciones, que luego serán normalizadas por lo que 1 y 1 es, en proporción, igual que 50 y 50.
 
 ## THINGS TO NOTICE
 
-(suggested things for the user to notice while running the model)
+Tiene otros botones para eliminar los links, hacerlos permanentes, hacer que no aparezcan...
+Además tiene una serie de gráficas para poder visualizar los cambios en la población.
+Además la población total está limitado a 800 por su alta complejidad (exponencial al crecer exponencialmente la cantidad de nacimientos y la cantidad de conflictos)
 
 ## THINGS TO TRY
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
-
+Busque diferentes ratios de inicializaciones y nacimientos para conseguir una sociedad que crezca. Véase que esta limitada la población máxima a 800 personas.
+Busque también entender diferentes propeidades de los agentes. Nótese que ha de usarse un gran porcentaje de goods y tit-for-tats para que pueda existir la supervivencia, pues es mas fácil quitar vida que darla y además el hambre debilita a los agentes. Por esto mismo, agentes nivelados con el randomized harán más mal que bien a la socied
 ## EXTENDING THE MODEL
 
 (suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
@@ -785,7 +817,7 @@ HORIZONTAL
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+Si tiene más interés en teoría de juegos o agentes jugadores, véa el video "What Game Theory Reveals About Life, The Universe, and Everything" del canal Veritasium
 @#$#@#$#@
 default
 true

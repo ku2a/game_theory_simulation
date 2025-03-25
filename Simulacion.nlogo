@@ -598,6 +598,7 @@ PENS
 "Tit-for-tat" 1.0 0 -2064490 true "" "plot count tit-for-tats"
 "Randoms" 1.0 0 -1184463 true "" "plot count randomizeds"
 "Vengefuls" 1.0 0 -7500403 true "" "plot count vengefuls"
+"Resentfulls" 1.0 0 -8630108 true "" "plot count resentfulls"
 
 SLIDER
 0
@@ -757,24 +758,25 @@ HORIZONTAL
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+Este código pretende simular una sociedad, donde la gente entra en conflicto y la resolución de cada conflicto funciona como un juego (del estilo de la teoría de juegos)
 
 ## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+En cada tick los agentes se mueven a posiciones aleatorias y entran en conflicto con los demás agentes en un rango determinado. Estos combaten con todos los cercanos. Los puntos ganados o perdidos (siguiendo un esque de teoría de juegos) se añaden como vida. Además existe un factor de hambre. Los agentes pueden morir y además nacerán otros agentes en función de la cantidad de buenas relaciones existentes.
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+Para ejecutar una simulación, decida cuales agentes quiere que aparezcan inicialmente y cuantos de cada uno de ellos y también la proporción en la que nacerá cada uno de estos. Nótese que son proporciones, que luego serán normalizadas por lo que 1 y 1 es, en proporción, igual que 50 y 50.
 
 ## THINGS TO NOTICE
 
-(suggested things for the user to notice while running the model)
+Tiene otros botones para eliminar los links, hacerlos permanentes, hacer que no aparezcan...
+Además tiene una serie de gráficas para poder visualizar los cambios en la población
 
 ## THINGS TO TRY
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
-
+Busque diferentes ratios de inicializaciones y nacimientos para conseguir una sociedad que crezca. Véase que esta limitada la población máxima a 800 personas.
+Busque también entender diferentes propeidades de los agentes. Nótese que ha de usarse un gran porcentaje de goods y tit-for-tats para que pueda existir la supervivencia
 ## EXTENDING THE MODEL
 
 (suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
@@ -789,7 +791,7 @@ HORIZONTAL
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+Si tiene más interés en teoría de juegos o agentes jugadores, véa el video "What Game Theory Reveals About Life, The Universe, and Everything" del canal Veritasium
 @#$#@#$#@
 default
 true
