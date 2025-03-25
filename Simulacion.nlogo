@@ -762,7 +762,32 @@ Este código pretende simular una sociedad, donde la gente entra en conflicto y 
 
 ## HOW IT WORKS
 
-En cada tick los agentes se mueven a posiciones aleatorias y entran en conflicto con los demás agentes en un rango determinado. Estos combaten con todos los cercanos. Los puntos ganados o perdidos (siguiendo un esque de teoría de juegos) se añaden como vida. Además existe un factor de hambre. Los agentes pueden morir y además nacerán otros agentes en función de la cantidad de buenas relaciones existentes.
+En cada tick los agentes se mueven a posiciones aleatorias y entran en conflicto con los demás agentes en un rango determinado. Estos combaten con todos los cercanos. Los puntos ganados o perdidos (siguiendo un esquema de teoría de juegos) se añaden como vida. Además existe un factor de hambre. Los mueren si su vida es menor o igual a 0 y además nacerán otros agentes en función de la cantidad de buenas relaciones existentes.
+
+el esquema es el siguiente:
+
+
+
++-- ----+---- ---+
+|  +3/+3 | -4/+5 |
++----- -+----- --+
+|  +5/-4 | -1 /-1 |
++--- ---+-- -----+
+
+Por ejemplo si el turtle 1 es generoso y el turtle 2 es egoísta, el turtle 1 perderá 4 puntos y el turtle 2 ganará 5 puntos.
+
+El hambre se calcula por cada tick como hambre = 1 + log(N) donde N es la población total
+
+Los nacimientos son controlados por una variable n_iter que controla cada cuantas iteraciones nacen personas. La cantidad de personas que nacen es M/n_iter, donde M es la cantidad de todas las relaciones buenas (verdes) que han ocurrido es las últimas n_iter iteraciones
+
+Existen diferentes agentes, cada agente tiene una estrategia de como lidiar con cada conflicto que encuentra:
+Good: siempre es generoso (verde)
+Bad: siempre egoísta (rojo)
+Randomized: elige aleatoriamente en cada conflicto (amarillo)
+Tit-for-tat: inicia siendo bueno, después repite el mismo movimiento que uso el otro turtle contra el que tiene conflicto la última vez que jugó contra él (rosa)
+Inverse-tat: utiliza la lógica inversa a tit-for-tat (azul)
+Resentful: empieza siendo bueno, después repite la misma estrategia usada contra él en su último conflicto (Nótese que no es como tit-fot-tat, pues este repite lo último que fues usado contra él mientras que tit-fot-tat repite lo último usado contra él por ese mismo turtle contra el que está en conflicto, es decir, tit-for-tat recuerda a los demás agentes) (violeta)
+Vengeful: inicia bueno, se convierte en malo tras haberse encontrado con algún egoísta (gris)
 
 ## HOW TO USE IT
 
@@ -771,12 +796,13 @@ Para ejecutar una simulación, decida cuales agentes quiere que aparezcan inicia
 ## THINGS TO NOTICE
 
 Tiene otros botones para eliminar los links, hacerlos permanentes, hacer que no aparezcan...
-Además tiene una serie de gráficas para poder visualizar los cambios en la población
+Además tiene una serie de gráficas para poder visualizar los cambios en la población.
+Además la población total está limitado a 800 por su alta complejidad (exponencial al crecer exponencialmente la cantidad de nacimientos y la cantidad de conflictos)
 
 ## THINGS TO TRY
 
 Busque diferentes ratios de inicializaciones y nacimientos para conseguir una sociedad que crezca. Véase que esta limitada la población máxima a 800 personas.
-Busque también entender diferentes propeidades de los agentes. Nótese que ha de usarse un gran porcentaje de goods y tit-for-tats para que pueda existir la supervivencia
+Busque también entender diferentes propeidades de los agentes. Nótese que ha de usarse un gran porcentaje de goods y tit-for-tats para que pueda existir la supervivencia, pues es mas fácil quitar vida que darla y además el hambre debilita a los agentes. Por esto mismo, agentes nivelados con el randomized harán más mal que bien a la sociedad.
 ## EXTENDING THE MODEL
 
 (suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
