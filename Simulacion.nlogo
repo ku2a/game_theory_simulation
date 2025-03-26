@@ -446,7 +446,7 @@ goods-spawn
 goods-spawn
 0
 50
-50.0
+22.0
 1
 1
 NIL
@@ -762,7 +762,7 @@ Este código pretende simular una sociedad, donde la gente entra en conflicto y 
 
 ## HOW IT WORKS
 
-En cada tick los agentes se mueven a posiciones aleatorias y entran en conflicto con los demás agentes en un rango determinado. Estos combaten con todos los cercanos. Los puntos ganados o perdidos (siguiendo un esquema de teoría de juegos) se añaden como vida. Además existe un factor de hambre. Los mueren si su vida es menor o igual a 0 y además nacerán otros agentes en función de la cantidad de buenas relaciones existentes.
+En cada ciclo de simulación, los agentes se mueven a posiciones aleatorias y, si se encuentran dentro de un rango de interacción, entran en conflicto con los cercanos, combatiendo según un esquema basado en teoría de juegos, donde los puntos ganados o perdidos afectan su nivel de vida. Además, hay un factor de hambre que reduce su vida. Los agentes mueren si su vida llega a cero o menos, y nuevos agentes pueden nacer en función de la cantidad de relaciones positivas existentes.
 
 el esquema es el siguiente:
 
@@ -776,7 +776,7 @@ el esquema es el siguiente:
 
 Por ejemplo si el turtle 1 es generoso y el turtle 2 es egoísta, el turtle 1 perderá 4 puntos y el turtle 2 ganará 5 puntos.
 
-El hambre se calcula por cada tick como hambre = 1 + log(N) donde N es la población total
+El hambre se calcula por cada tick como hambre = 1 + log(N) donde N es la población total, esto se le resta a la vida del agente en cada iteración
 
 Los nacimientos son controlados por una variable n_iter que controla cada cuantas iteraciones nacen personas. La cantidad de personas que nacen es M/n_iter, donde M es la cantidad de todas las relaciones buenas (verdes) que han ocurrido es las últimas n_iter iteraciones
 
@@ -805,7 +805,7 @@ Busque diferentes ratios de inicializaciones y nacimientos para conseguir una so
 Busque también entender diferentes propeidades de los agentes. Nótese que ha de usarse un gran porcentaje de goods y tit-for-tats para que pueda existir la supervivencia, pues es mas fácil quitar vida que darla y además el hambre debilita a los agentes. Por esto mismo, agentes nivelados con el randomized harán más mal que bien a la sociedad.
 ## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+Se puede expandir los tipos de agentes con distintos comportamientos, modificar la pérdida de salud para hacer más difícil la supervivencia o el número de nacimientos
 
 ## NETLOGO FEATURES
 
@@ -813,7 +813,11 @@ Busque también entender diferentes propeidades de los agentes. Nótese que ha d
 
 ## RELATED MODELS
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+https://ccl.northwestern.edu/netlogo/models/community/Learning%20Complicated%20Games%20-Galla&Farmer%20(2012)
+
+https://ccl.northwestern.edu/netlogo/models/HubNetPrisonersDilemmaHubNet
+
+https://ccl.northwestern.edu/netlogo/models/community/GameTheory
 
 ## CREDITS AND REFERENCES
 
